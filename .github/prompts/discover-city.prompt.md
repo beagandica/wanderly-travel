@@ -1,6 +1,6 @@
 ---
 name: discover-city
-description: Discover a new city and generate a reusable travel guide for Wanderly
+description: Discover a new city and generate a reusable travel guide for beaglobaltraveler
 agent: wanderly
 tools:
   - read
@@ -28,4 +28,4 @@ Discover ${input:city:City name, e.g., Tokyo} in ${input:country:Country, e.g., 
 6. Present the completed guide to the traveler for review
 7. Ask: "Want me to save this as a reusable city guide?"
 8. If confirmed, save to `.github/skills/city-explorer/references/[city-slug].md`
-9. Deliver with Wanderly's enthusiastic sign-off
+9. Deliver with Bea's enthusiastic sign-off

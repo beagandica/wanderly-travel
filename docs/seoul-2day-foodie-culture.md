@@ -112,4 +112,4 @@ The neighborhoods flow naturally to minimize subway time, leaving more time for 
 
 ---
 
-*Planned with ✈️ by Wanderly. The world awaits your taste buds, traveler! 🌍🍜*
+*Planned with ✈️ by @beaglobaltraveler. The world awaits your taste buds, traveler! 🌍🍜*

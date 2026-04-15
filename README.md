@@ -1,15 +1,15 @@
-# ✈️ Wanderly Travel Planner
+# ✈️ beaglobaltraveler
 
 An AI-powered travel planner built with GitHub Copilot customization: custom agents, skills, and prompt files working together.
 
-**Ask about any city.** If Wanderly knows it, you get instant curated recommendations. If not, it auto-generates a guide and caches it for next time.
+**Ask about any city.** If beaglobaltraveler knows it, you get instant curated recommendations. If not, it auto-generates a guide and caches it for next time.
 
 ## What's inside
 
 | Layer | File | What it does |
 |---|---|---|
 | Project context | `.github/copilot-instructions.md` | Tells Copilot about the project |
-| Agent | `.github/agents/wanderly.agent.md` | ✈️ Wanderly, enthusiastic travel planner with personality |
+| Agent | `.github/agents/wanderly.agent.md` | ✈️ Bea's travel guide, enthusiastic travel planner with personality |
 | Skill | `.github/skills/city-explorer/` | City data, recommendation scripts, itinerary templates |
 | Instructions | `.github/instructions/` | Path-specific rules for markdown and Python files |
 | Prompts | `.github/prompts/` | `/plan-my-day` and `/discover-city` reusable commands |
@@ -19,13 +19,13 @@ An AI-powered travel planner built with GitHub Copilot customization: custom age
 ## Quick start
 
 ```bash
-git clone https://github.com/beagandica/wanderly-travel.git
-cd wanderly-travel
+git clone https://github.com/beagandica/beaglobaltraveler.git
+cd beaglobaltraveler
 code .
 pip install -r requirements.txt
 ```
 
-Open Copilot Chat, select **Wanderly** from the `@` picker, and ask:
+Open Copilot Chat, select **@wanderly** (Bea's travel guide) from the picker, and ask:
 - *"What should I eat in Seoul?"*
 - *"Plan a 2-day trip to Bucheon"*
 - *"Discover Tokyo for me"*
@@ -46,7 +46,7 @@ python -m src.main cities
 
 Just create one markdown file at `.github/skills/city-explorer/references/[city].md` following the same format as `seoul.md`. No code changes needed.
 
-Or ask Wanderly: *"Tell me about Lisbon"*, it will auto-generate and cache the guide.
+Or ask @wanderly: *"Tell me about Lisbon"*, it will auto-generate and cache the guide.
 
 ## Visualization
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✈️ Wanderly | Seoul Travel Guide</title>
+    <title>✈️ beaglobaltraveler | Seoul Travel Guide</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,7 +36,7 @@
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 8px;
-            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            background: linear-gradient(90deg, #60a5fa, #38bdf8, #fb923c);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -157,8 +157,8 @@
             font-size: 0.85rem;
             transition: all 0.3s;
         }
-        .filter-btn:hover { border-color: #a78bfa; color: #a78bfa; }
-        .filter-btn.active { background: #a78bfa; color: #0f1117; border-color: #a78bfa; }
+        .filter-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .filter-btn.active { background: #38bdf8; color: #0f1117; border-color: #38bdf8; }
 
         /* Cards grid */
         .cards {
@@ -204,8 +204,8 @@
             color: #94a3b8;
         }
         .card-tag.food { background: #422006; color: #fbbf24; }
-        .card-tag.culture { background: #1e1b4b; color: #a78bfa; }
-        .card-tag.nightlife { background: #4a044e; color: #e879f9; }
+        .card-tag.culture { background: #0c4a6e; color: #38bdf8; }
+        .card-tag.nightlife { background: #083344; color: #22d3ee; }
         .card-tag.nature { background: #052e16; color: #4ade80; }
         .card-tag.budget-low { background: #064e3b; color: #6ee7b7; }
         .card-tag.budget-mid { background: #713f12; color: #fcd34d; }
@@ -241,7 +241,7 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background: linear-gradient(180deg, #60a5fa, #a78bfa, #f472b6, #60a5fa);
+            background: linear-gradient(180deg, #60a5fa, #38bdf8, #fb923c, #60a5fa);
             border-radius: 3px;
         }
         .timeline-day {
@@ -272,8 +272,8 @@
         }
         .timeline-dot.morning { background: #fbbf24; }
         .timeline-dot.afternoon { background: #60a5fa; }
-        .timeline-dot.evening { background: #a78bfa; }
-        .timeline-dot.food-stop { background: #f472b6; }
+        .timeline-dot.evening { background: #38bdf8; }
+        .timeline-dot.food-stop { background: #fb923c; }
         .timeline-content {
             background: #1a1d2e;
             border: 1px solid #2a2d3a;
@@ -325,8 +325,7 @@
         }
         .phrase-romanized {
             font-size: 0.9rem;
-            color: #a78bfa;
-            font-style: italic;
+            color: #38bdf8;            font-style: italic;
             margin-bottom: 8px;
         }
         .phrase-english {
@@ -356,7 +355,7 @@
 
 <!-- Hero -->
 <div class="hero">
-    <h1>✈️ Wanderly | Seoul</h1>
+    <h1>✈️ beaglobaltraveler | Seoul</h1>
     <p class="subtitle">Your AI travel companion's guide to the soul of South Korea</p>
     <div class="stats">
         <div class="stat">
@@ -394,8 +393,8 @@
     <div id="map"></div>
     <div class="map-legend">
         <span><span class="legend-dot" style="background:#fbbf24"></span> Food</span>
-        <span><span class="legend-dot" style="background:#a78bfa"></span> Culture</span>
-        <span><span class="legend-dot" style="background:#e879f9"></span> Nightlife</span>
+        <span><span class="legend-dot" style="background:#38bdf8"></span> Culture</span>
+        <span><span class="legend-dot" style="background:#22d3ee"></span> Nightlife</span>
         <span><span class="legend-dot" style="background:#4ade80"></span> Nature / Views</span>
     </div>
 </div>
@@ -427,7 +426,7 @@
 <!-- Itinerary Section -->
 <div id="sec-itinerary" class="section">
     <h2 class="section-title">📅 2-Day Seoul Itinerary</h2>
-    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by Wanderly ✈️ , foodie + culture vibe</p>
+    <p style="text-align:center; color:#94a3b8; margin-bottom:32px;">Curated by beaglobaltraveler ✈️ , foodie + culture vibe</p>
     <div class="timeline" id="timeline"></div>
 </div>
 
@@ -440,10 +439,10 @@
 
 <div class="footer">
     Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
-    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#f472b6">@beaglobaltraveler</a> ·
-    <a href="https://github.com/beagandica/wanderly-travel" style="color:#60a5fa">GitHub</a> ·
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" style="color:#fb923c">@beaglobaltraveler</a> ·
+    <a href="https://github.com/beagandica/beaglobaltraveler" style="color:#60a5fa">GitHub</a> ·
     <a href="index.html" style="color:#60a5fa">All Cities</a><br>
-    <small>&copy; 2026 Wanderly Travel</small>
+    <small>&copy; 2026 beaglobaltraveler</small>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -557,8 +556,8 @@ function addMarkers(data, color, group) {
 }
 
 addMarkers(foodData, '#fbbf24', 'food');
-addMarkers(landmarkData, '#a78bfa', 'culture');
-addMarkers(nightlifeData, '#e879f9', 'nightlife');
+addMarkers(landmarkData, '#38bdf8', 'culture');
+addMarkers(nightlifeData, '#22d3ee', 'nightlife');
 
 // ============================================================
 // CARDS

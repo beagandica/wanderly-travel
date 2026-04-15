@@ -1,4 +1,4 @@
-# Wanderly backlog
+# beaglobaltraveler backlog
 
 ## Phase 1: Core content
 
@@ -54,14 +54,14 @@ User asks about a city
 | Mobile-friendly design | Responsive layout for phone use while traveling | None |
 | Shareable itinerary links | Standalone HTML itinerary, saveable as PDF | Multi-city planner |
 
-## Phase 4: Wanderly agent upgrades
+## Phase 4: beaglobaltraveler agent upgrades
 
 | Item | Description |
 |---|---|
-| Preference memory | Track user preferences (budget, food style, pace) in a file Wanderly reads |
+| Preference memory | Track user preferences (budget, food style, pace) in a file beaglobaltraveler reads |
 | City comparison mode | "Compare Seoul vs Tokyo for a foodie trip" with side-by-side analysis |
 | Seasonal recommendations | Best-time-to-visit data, seasonal events, date-aware suggestions |
-| GitHub Pages deployment | Live site at beagandica.github.io/wanderly-travel |
+| GitHub Pages deployment | Live site at beagandica.github.io/beaglobaltraveler |
 
 ## API keys needed
 

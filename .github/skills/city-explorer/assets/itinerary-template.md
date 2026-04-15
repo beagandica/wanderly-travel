@@ -55,4 +55,4 @@
 
 ---
 
-*Planned with ✈️ by Wanderly. Happy wandering!*
+*Planned with ✈️ by @beaglobaltraveler. Happy wandering!*

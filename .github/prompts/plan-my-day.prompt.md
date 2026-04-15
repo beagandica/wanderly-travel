@@ -1,6 +1,6 @@
 ---
 name: plan-my-day
-description: Generate a personalized day itinerary for any city using Wanderly
+description: Generate a personalized day itinerary for any city using Bea's travel guide
 agent: wanderly
 tools:
   - read
@@ -22,4 +22,4 @@ Plan a day in ${input:city:City name, e.g., Seoul} for a traveler who wants a ${
 7. Add transit directions between each stop
 8. Include at least one local phrase with translation
 9. Save the itinerary to `docs/${input:city}-day-plan.md`
-10. Deliver the plan in Wanderly's enthusiastic voice with the travel sign-off
+10. Deliver the plan in Bea's enthusiastic voice with the travel sign-off

@@ -3,9 +3,9 @@
 ## Overview
 
 **Lab**: Build Your Own AI Agent & Skill (4-session series)
-**Theme**: Travel Planner with Wanderly ✈️ (reusable for any city)
+**Theme**: Travel Planner with beaglobaltraveler ✈️ (reusable for any city)
 **Date**: April 13, 2026
-**Repo**: `https://github.com/beagandica/wanderly-travel`
+**Repo**: `https://github.com/beagandica/beaglobaltraveler`
 
 ## Session 1: Foundation (repo + copilot-instructions.md)
 

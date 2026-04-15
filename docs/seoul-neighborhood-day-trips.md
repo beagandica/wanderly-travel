@@ -380,4 +380,4 @@ Order something light: galguksu, bibimbap, or fusion Korean tapas.
 
 ---
 
-*Planned with ✈️ by Wanderly. Each neighborhood in Seoul is its own adventure, traveler! Now let's build references for the cities around it too. 🌏*
+*Planned with ✈️ by @beaglobaltraveler. Each neighborhood in Seoul is its own adventure, traveler! Now let's build references for the cities around it too. 🌏*
