@@ -3,169 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wanderly - Your AI Travel Companion</title>
+    <title>Wanderly - Travel the World with Bea</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #0f1117;
-            color: #e4e4e7;
-            min-height: 100vh;
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f1117;color:#e4e4e7;min-height:100vh;overflow-x:hidden}
+
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(249,115,22,0.3)}50%{box-shadow:0 0 20px rgba(249,115,22,0.5)}}
+        .reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+        .reveal.visible{opacity:1;transform:translateY(0)}
+
+        /* Hero */
+        .hero{background:linear-gradient(135deg,#0f1117 0%,#0d1b2a 40%,#1a1a2e 100%);padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
+        .hero::before{content:'\2708\FE0F';position:absolute;font-size:280px;opacity:.04;top:-50px;right:-30px;transform:rotate(-15deg)}
+        .hero h1{font-size:4rem;font-weight:800;margin-bottom:10px;background:linear-gradient(90deg,#3b82f6,#f97316,#ef4444,#fbbf24,#3b82f6);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 6s ease infinite}
+        .hero .subtitle{font-size:1.4rem;color:#cbd5e1;margin-bottom:10px;font-weight:500}
+        .hero .tagline{font-size:1rem;color:#94a3b8;max-width:620px;margin:0 auto 36px;line-height:1.7}
+        .stats-bar{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:32px}
+        .stat{text-align:center}
+        .stat-num{font-size:2.4rem;font-weight:800;color:#f97316}
+        .stat-label{font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+        .cta-btn{display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f97316,#ef4444);color:#fff;border-radius:30px;text-decoration:none;font-weight:700;font-size:1rem;transition:all .3s;box-shadow:0 4px 15px rgba(249,115,22,.3);animation:pulseGlow 3s ease infinite}
+        .cta-btn:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(249,115,22,.5)}
+
+        /* Map */
+        #map{width:100%;height:480px;background:#0f1117}
+        .leaflet-container{background:#0f1117!important}
+        .dark-tooltip{background:rgba(15,17,23,.95)!important;border:1px solid #3a3d4e!important;color:#e4e4e7!important;border-radius:8px!important;padding:6px 12px!important;font-size:.82rem!important;box-shadow:0 4px 15px rgba(0,0,0,.4)!important}
+        .dark-tooltip::before{display:none!important}
+        .map-legend{background:rgba(15,17,23,.92);border:1px solid #2a2d3a;border-radius:10px;padding:12px 16px;font-size:.75rem;line-height:1.9;color:#94a3b8}
+        .legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+        /* Section headers */
+        .section-header{text-align:center;padding:56px 24px 28px}
+        .section-header h2{font-size:1.8rem;font-weight:700;color:#f1f5f9}
+        .section-header p{color:#64748b;font-size:.95rem;margin-top:6px}
+
+        /* Region cards */
+        .region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;max-width:1100px;margin:0 auto;padding:0 24px 48px}
+        .region-card{background:#1a1d2e;border:1px solid #2a2d3a;border-radius:14px;padding:20px;transition:all .3s;overflow:hidden}
+        .region-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-color:#3a3d4e}
+        .region-emoji{font-size:2rem;margin-bottom:8px}
+        .region-name{font-size:1.1rem;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+        .region-count{font-size:.85rem;color:#94a3b8;margin-bottom:8px}
+        .region-flags{font-size:.9rem;letter-spacing:2px}
+
+        /* City guides */
+        .search-section{text-align:center;padding:0 24px 20px;max-width:600px;margin:0 auto}
+        .search-box{width:100%;padding:14px 24px;border-radius:30px;border:1px solid #2a2d3a;background:#1a1d2e;color:#e4e4e7;font-size:1rem;outline:none;transition:all .3s}
+        .search-box::placeholder{color:#4a5568}
+        .search-box:focus{border-color:#f97316;box-shadow:0 0 20px rgba(249,115,22,.15)}
+        .city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;max-width:1200px;margin:0 auto;padding:0 24px 48px}
+        .city-card{background:#1a1d2e;border:1px solid #2a2d3a;border-radius:14px;padding:24px 20px;cursor:pointer;transition:all .3s;text-decoration:none;color:inherit;position:relative;overflow:hidden;display:block}
+        .city-card:hover{border-color:#f97316;transform:translateY(-4px);box-shadow:0 12px 40px rgba(249,115,22,.12)}
+        .city-card.coming-soon{opacity:.5;cursor:default}
+        .city-card.coming-soon:hover{border-color:#2a2d3a;transform:none;box-shadow:none}
+        .city-flag{font-size:2.6rem;margin-bottom:10px}
+        .city-name{font-size:1.15rem;font-weight:600;color:#f1f5f9;margin-bottom:3px}
+        .city-country{font-size:.82rem;color:#64748b;margin-bottom:10px}
+        .city-tags{display:flex;gap:6px;flex-wrap:wrap}
+        .tag{font-size:.7rem;padding:3px 10px;border-radius:10px;font-weight:500}
+        .tag-food{background:#422006;color:#fbbf24}
+        .tag-culture{background:#172554;color:#60a5fa}
+        .tag-nightlife{background:#450a0a;color:#f87171}
+        .tag-nature{background:#052e16;color:#4ade80}
+        .tag-shopping{background:#431407;color:#fb923c}
+        .badge{position:absolute;top:12px;right:12px;font-size:.68rem;padding:3px 10px;border-radius:10px;font-weight:600}
+        .badge-live{background:#064e3b;color:#6ee7b7}
+        .badge-soon{background:#2a2d3a;color:#64748b}
+
+        /* Features */
+        .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:1000px;margin:0 auto;padding:0 24px 64px}
+        .feature{text-align:center;padding:24px 16px;border-radius:14px;transition:all .3s}
+        .feature:hover{background:#1a1d2e;transform:translateY(-2px)}
+        .feat-icon{font-size:2.2rem;margin-bottom:12px}
+        .feat-title{font-size:1rem;font-weight:600;color:#f1f5f9;margin-bottom:6px}
+        .feat-desc{font-size:.85rem;color:#64748b;line-height:1.6}
+
+        /* Footer */
+        .footer{text-align:center;padding:40px 24px;border-top:1px solid #1a1d2e;color:#475569;font-size:.85rem;line-height:1.8}
+        .footer a{color:#f97316;text-decoration:none}
+        .footer a:hover{text-decoration:underline}
+
+        /* Responsive */
+        @media(max-width:768px){
+            .hero h1{font-size:2.6rem}
+            .hero{padding:50px 20px 40px}
+            .stats-bar{gap:24px}
+            .stat-num{font-size:1.8rem}
+            .region-grid{grid-template-columns:repeat(2,1fr)}
+            .city-grid{grid-template-columns:repeat(2,1fr)}
+            #map{height:360px}
         }
-        .hero {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            padding: 80px 40px 60px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        @media(max-width:480px){
+            .hero h1{font-size:2rem}
+            .region-grid{grid-template-columns:1fr}
+            .city-grid{grid-template-columns:1fr}
+            .stats-bar{gap:16px}
+            #map{height:300px}
         }
-        .hero::before {
-            content: '\2708\FE0F';
-            position: absolute;
-            font-size: 300px;
-            opacity: 0.04;
-            top: -60px;
-            right: -40px;
-            transform: rotate(-15deg);
-        }
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero .subtitle { font-size: 1.3rem; color: #94a3b8; margin-bottom: 8px; }
-        .hero .tagline { font-size: 0.95rem; color: #64748b; max-width: 600px; margin: 0 auto 32px; }
-        .hero .stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
-        .stat-number { font-size: 2.2rem; font-weight: 700; color: #60a5fa; }
-        .stat-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
-        .search-section { text-align: center; padding: 40px 20px 20px; max-width: 600px; margin: 0 auto; }
-        .search-box {
-            width: 100%; padding: 16px 24px; border-radius: 30px; border: 1px solid #2a2d3a;
-            background: #1a1d2e; color: #e4e4e7; font-size: 1.1rem; outline: none; transition: all 0.3s;
-        }
-        .search-box::placeholder { color: #4a5568; }
-        .search-box:focus { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.15); }
-        .section-header { text-align: center; padding: 40px 20px 24px; }
-        .section-header h2 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
-        .section-header p { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
-        .city-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 20px 40px;
-        }
-        .city-card {
-            background: #1a1d2e; border: 1px solid #2a2d3a; border-radius: 16px;
-            padding: 28px 24px; cursor: pointer; transition: all 0.3s;
-            text-decoration: none; color: inherit; position: relative; overflow: hidden; display: block;
-        }
-        .city-card:hover { border-color: #60a5fa; transform: translateY(-4px); box-shadow: 0 12px 40px rgba(96, 165, 250, 0.12); }
-        .city-card.coming-soon { opacity: 0.5; cursor: default; }
-        .city-card.coming-soon:hover { border-color: #2a2d3a; transform: none; box-shadow: none; }
-        .city-flag { font-size: 2.8rem; margin-bottom: 12px; }
-        .city-name { font-size: 1.2rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
-        .city-country { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
-        .city-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-        .city-tag { font-size: 0.72rem; padding: 3px 10px; border-radius: 10px; background: #2a2d3a; color: #94a3b8; }
-        .city-tag.food { background: #422006; color: #fbbf24; }
-        .city-tag.culture { background: #1e1b4b; color: #a78bfa; }
-        .city-tag.nightlife { background: #4a044e; color: #e879f9; }
-        .city-tag.nature { background: #052e16; color: #4ade80; }
-        .city-tag.shopping { background: #172554; color: #93c5fd; }
-        .badge { position: absolute; top: 12px; right: 12px; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
-        .badge.live { background: #064e3b; color: #6ee7b7; }
-        .badge.soon { background: #2a2d3a; color: #64748b; }
-        .features {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; max-width: 1000px; margin: 0 auto; padding: 0 20px 60px;
-        }
-        .feature { text-align: center; padding: 24px; }
-        .feature-emoji { font-size: 2rem; margin-bottom: 12px; }
-        .feature-title { font-size: 1rem; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
-        .feature-desc { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
-        .footer { text-align: center; padding: 40px 20px; border-top: 1px solid #1a1d2e; color: #475569; font-size: 0.85rem; }
-        .footer a { color: #60a5fa; text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.2rem; }
-            .hero { padding: 50px 20px 40px; }
-            .city-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 480px) { .city-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="hero">
+<section class="hero">
     <h1>Wanderly</h1>
-    <p class="subtitle">Your AI travel companion</p>
-    <p class="tagline">Curated city guides with interactive maps, local food picks, neighborhood walks, and day-by-day itineraries. Built with a Copilot agent that grows its own knowledge.</p>
-    <div class="stats">
-        <div><div class="stat-number">22</div><div class="stat-label">Cities</div></div>
-        <div><div class="stat-number">50+</div><div class="stat-label">Recommendations</div></div>
-        <div><div class="stat-number">6</div><div class="stat-label">Categories</div></div>
+    <p class="subtitle">Travel the world with Bea</p>
+    <p class="tagline">Venezuelan-born, tech-powered, 74 countries and counting. Curated city guides from someone who's actually been there.</p>
+    <div class="stats-bar">
+        <div class="stat"><div class="stat-num" data-target="74">0</div><div class="stat-label">Countries</div></div>
+        <div class="stat"><div class="stat-num" data-target="48">0</div><div class="stat-label">of 50 US States</div></div>
+        <div class="stat"><div class="stat-num" data-target="7">0</div><div class="stat-label">Continents</div></div>
+        <div class="stat"><div class="stat-num" data-target="10">0</div><div class="stat-label">Regions</div></div>
     </div>
-</div>
+    <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener" class="cta-btn">📸 Follow @beaglobaltraveler</a>
+</section>
 
-<div class="search-section">
-    <input type="text" class="search-box" id="search" placeholder="Search cities... (e.g., Seoul, Tokyo, Paris)" oninput="filterCities()">
-</div>
+<section class="reveal">
+    <div id="map"></div>
+</section>
 
-<div class="section-header"><h2>Explore a city</h2><p>Click any city to open its interactive guide</p></div>
-<div class="city-grid" id="city-grid"></div>
+<section class="reveal">
+    <div class="section-header">
+        <h2>Where Bea has been 🌍</h2>
+        <p>74 countries across 8 regions, from Caracas to Kyoto</p>
+    </div>
+    <div class="region-grid" id="region-grid"></div>
+</section>
 
-<div class="section-header"><h2>What you get</h2></div>
-<div class="features">
-    <div class="feature"><div class="feature-emoji">🗺️</div><div class="feature-title">Interactive maps</div><div class="feature-desc">Every restaurant, landmark, and bar pinned on a dark-theme map with emoji markers</div></div>
-    <div class="feature"><div class="feature-emoji">🍜</div><div class="feature-title">Local food picks</div><div class="feature-desc">Curated restaurants with budget levels, must-order items, and honest opinions</div></div>
-    <div class="feature"><div class="feature-emoji">📅</div><div class="feature-title">Day-by-day itineraries</div><div class="feature-desc">Visual timelines with morning, afternoon, and evening blocks grouped by neighborhood</div></div>
-    <div class="feature"><div class="feature-emoji">💬</div><div class="feature-title">Survival phrases</div><div class="feature-desc">Essential local phrases with romanization so you can order food and say thank you</div></div>
-</div>
+<section class="reveal">
+    <div class="section-header">
+        <h2>City Guides ✈️</h2>
+        <p>Click any live city to explore its interactive guide</p>
+    </div>
+    <div class="search-section">
+        <input type="text" class="search-box" id="search" placeholder="Search cities... (Seoul, Tokyo, Paris)" oninput="filterCities()">
+    </div>
+    <div class="city-grid" id="city-grid"></div>
+</section>
 
-<div class="footer">Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank">@beaglobaltraveler</a> · <a href="https://github.com/beagandica/wanderly-travel">GitHub</a><br><small>&copy; 2026 Wanderly Travel</small></div>
+<section class="reveal">
+    <div class="section-header">
+        <h2>What makes Wanderly different 🔥</h2>
+    </div>
+    <div class="features">
+        <div class="feature">
+            <div class="feat-icon">🗺️</div>
+            <div class="feat-title">Interactive maps</div>
+            <div class="feat-desc">Every restaurant, landmark, and bar pinned on a dark-theme map with emoji markers</div>
+        </div>
+        <div class="feature">
+            <div class="feat-icon">🍜</div>
+            <div class="feat-title">Local food picks</div>
+            <div class="feat-desc">Curated restaurants with budget levels, must-order dishes, and honest opinions</div>
+        </div>
+        <div class="feature">
+            <div class="feat-icon">📅</div>
+            <div class="feat-title">Day-by-day itineraries</div>
+            <div class="feat-desc">Visual timelines with morning, afternoon, and evening blocks grouped by neighborhood</div>
+        </div>
+        <div class="feature">
+            <div class="feat-icon">💬</div>
+            <div class="feat-title">Survival phrases</div>
+            <div class="feat-desc">Essential local phrases with romanization so you can order food and say thank you</div>
+        </div>
+    </div>
+</section>
 
+<footer class="footer">
+    Built by <strong>Beatris Mendez Gandica</strong> with ❤️ for travelers everywhere<br>
+    AI companion for <a href="https://instagram.com/beaglobaltraveler" target="_blank" rel="noopener">@beaglobaltraveler</a> · <a href="https://github.com/beagandica/wanderly-travel" target="_blank" rel="noopener">GitHub</a><br>
+    <small>&copy; 2026 Wanderly Travel</small>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const cities = [
-    { name: "Seoul", country: "South Korea", flag: "\ud83c\uddf0\ud83c\uddf7", file: "seoul-guide.html", live: true, tags: ["food", "culture", "nightlife", "shopping"] },
-    { name: "Bucheon", country: "South Korea", flag: "\ud83c\uddf0\ud83c\uddf7", file: null, live: false, tags: ["food", "culture", "nature"] },
-    { name: "Tokyo", country: "Japan", flag: "\ud83c\uddef\ud83c\uddf5", file: null, live: false, tags: ["food", "culture", "nightlife", "shopping"] },
-    { name: "Paris", country: "France", flag: "\ud83c\uddeb\ud83c\uddf7", file: null, live: false, tags: ["food", "culture", "shopping"] },
-    { name: "London", country: "United Kingdom", flag: "\ud83c\uddec\ud83c\udde7", file: null, live: false, tags: ["culture", "nightlife", "shopping"] },
-    { name: "New York", country: "United States", flag: "\ud83c\uddfa\ud83c\uddf8", file: null, live: false, tags: ["food", "culture", "nightlife", "shopping"] },
-    { name: "Bangkok", country: "Thailand", flag: "\ud83c\uddf9\ud83c\udded", file: null, live: false, tags: ["food", "culture", "nightlife"] },
-    { name: "Dubai", country: "UAE", flag: "\ud83c\udde6\ud83c\uddea", file: null, live: false, tags: ["shopping", "culture"] },
-    { name: "Singapore", country: "Singapore", flag: "\ud83c\uddf8\ud83c\uddec", file: null, live: false, tags: ["food", "culture", "shopping"] },
-    { name: "Istanbul", country: "Turkey", flag: "\ud83c\uddf9\ud83c\uddf7", file: null, live: false, tags: ["food", "culture"] },
-    { name: "Barcelona", country: "Spain", flag: "\ud83c\uddea\ud83c\uddf8", file: null, live: false, tags: ["food", "culture", "nightlife", "nature"] },
-    { name: "Rome", country: "Italy", flag: "\ud83c\uddee\ud83c\uddf9", file: null, live: false, tags: ["food", "culture"] },
-    { name: "Amsterdam", country: "Netherlands", flag: "\ud83c\uddf3\ud83c\uddf1", file: null, live: false, tags: ["culture", "nightlife", "nature"] },
-    { name: "Prague", country: "Czech Republic", flag: "\ud83c\udde8\ud83c\uddff", file: null, live: false, tags: ["culture", "nightlife"] },
-    { name: "Lisbon", country: "Portugal", flag: "\ud83c\uddf5\ud83c\uddf9", file: null, live: false, tags: ["food", "culture", "nightlife", "nature"] },
-    { name: "Bali", country: "Indonesia", flag: "\ud83c\uddee\ud83c\udde9", file: null, live: false, tags: ["nature", "culture", "food"] },
-    { name: "Sydney", country: "Australia", flag: "\ud83c\udde6\ud83c\uddfa", file: null, live: false, tags: ["nature", "food", "culture"] },
-    { name: "Mexico City", country: "Mexico", flag: "\ud83c\uddf2\ud83c\uddfd", file: null, live: false, tags: ["food", "culture", "nightlife"] },
-    { name: "Marrakech", country: "Morocco", flag: "\ud83c\uddf2\ud83c\udde6", file: null, live: false, tags: ["food", "culture", "shopping"] },
-    { name: "Kyoto", country: "Japan", flag: "\ud83c\uddef\ud83c\uddf5", file: null, live: false, tags: ["culture", "nature", "food"] },
-    { name: "Reykjavik", country: "Iceland", flag: "\ud83c\uddee\ud83c\uddf8", file: null, live: false, tags: ["nature", "culture"] },
-    { name: "Cape Town", country: "South Africa", flag: "\ud83c\uddff\ud83c\udde6", file: null, live: false, tags: ["nature", "food", "culture"] }
+/* Region data with coordinates */
+var R={
+"LATAM":{c:"#22c55e",p:[["Venezuela",8,-66],["Colombia",4.6,-74.1],["Brazil",-15.8,-47.9],["Chile",-33.4,-70.7],["Argentina",-34.6,-58.4],["Paraguay",-25.3,-57.6],["Uruguay",-34.9,-56.2],["Panama",9,-79.5],["Costa Rica",9.9,-84.1],["El Salvador",13.7,-89.2]]},
+"Caribbean":{c:"#14b8a6",p:[["Aruba",12.5,-70],["Haiti",18.5,-72.3],["Bahamas",25,-77.4],["Jamaica",18.1,-77.3],["Dominican Republic",18.5,-69.9],["Cayman Islands",19.3,-81.4],["US Virgin Islands",18.3,-64.9],["British Virgin Islands",18.4,-64.6],["Puerto Rico",18.2,-66.5],["Sint Maarten",18,-63.1]]},
+"North America":{c:"#3b82f6",p:[["USA",39.8,-98.6],["Canada",56.1,-106.3],["Mexico",23.6,-102.6]]},
+"Europe":{c:"#f97316",p:[["Germany",51.2,10.5],["Austria",47.5,14.6],["Poland",51.9,19.1],["Hungary",47.2,19.5],["Czech Republic",49.8,15.5],["France",46.6,2.2],["Portugal",39.4,-8.2],["Denmark",56.3,9.5],["Netherlands",52.1,5.3],["Belgium",50.5,4.5],["Spain",40.5,-3.7],["Monaco",43.7,7.4],["Switzerland",46.8,8.2],["UK",55.4,-3.4],["Italy",41.9,12.5],["Vatican",41.9,12.45],["Luxembourg",49.8,6.1],["Greece",39.1,21.8],["Iceland",64.1,-21.9],["Russia",61.5,105.3],["Finland",61.9,25.7],["Sweden",60.1,18.6],["Estonia",58.6,25],["Malta",35.9,14.4],["Andorra",42.5,1.5],["Liechtenstein",47.2,9.6],["Croatia",45.1,15.2],["Bosnia and Herzegovina",43.9,17.7],["Norway",60.5,8.5],["Ireland",53.1,-8]]},
+"Middle East":{c:"#eab308",p:[["Turkey",39.9,32.9],["UAE",23.4,53.8],["Israel",31,34.9],["Palestine",31.9,35.2],["Syria",35,38.5],["Qatar",25.3,51.2]]},
+"Africa":{c:"#ef4444",p:[["Morocco",31.8,-7.1],["Seychelles",-4.7,55.5],["Kenya",0,37.9],["Tanzania",-6.4,34.9],["Madagascar",-18.8,46.9],["Mauritius",-20.3,57.6]]},
+"Oceania":{c:"#60a5fa",p:[["Australia",-25.3,133.8],["New Zealand",-40.9,174.9],["Fiji",-18,179],["French Polynesia",-17.7,-149.4]]},
+"Asia":{c:"#4ade80",p:[["China",35.9,104.2],["India",20.6,79],["Vietnam",14.1,108.3],["Cambodia",12.6,104.9],["Laos",19.9,102.5],["Thailand",15.9,100.9],["Malaysia",4.2,101.9],["Singapore",1.4,103.8],["Japan",36.2,138.3],["Maldives",3.2,73.2]]}
+};
+
+/* Initialize Leaflet map */
+var map=L.map('map',{center:[20,0],zoom:2,minZoom:2,maxZoom:6,zoomControl:true,attributionControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+
+Object.keys(R).forEach(function(region){
+    var d=R[region];
+    d.p.forEach(function(place){
+        L.circleMarker([place[1],place[2]],{
+            radius:6,fillColor:d.c,color:d.c,weight:1,opacity:.8,fillOpacity:.6
+        }).bindTooltip('<b>'+place[0]+'</b> <span style="color:'+d.c+';">('+region+')</span>',{
+            className:'dark-tooltip'
+        }).addTo(map);
+    });
+});
+
+/* Map legend */
+var legend=L.control({position:'bottomright'});
+legend.onAdd=function(){
+    var div=L.DomUtil.create('div','map-legend');
+    var items=[['LATAM','#22c55e'],['Caribbean','#14b8a6'],['N. America','#3b82f6'],['Europe','#f97316'],['Middle East','#eab308'],['Africa','#ef4444'],['Oceania','#60a5fa'],['Asia','#4ade80']];
+    div.innerHTML=items.map(function(i){return'<span class="legend-dot" style="background:'+i[1]+'"></span>'+i[0]}).join('<br>');
+    return div;
+};
+legend.addTo(map);
+
+/* Region cards */
+var regions=[
+    {name:"Latin America",emoji:"\ud83c\udf0e",count:"10 countries",color:"#22c55e",flags:"\ud83c\uddfb\ud83c\uddea\ud83c\udde8\ud83c\uddf4\ud83c\udde7\ud83c\uddf7\ud83c\udde8\ud83c\uddf1\ud83c\udde6\ud83c\uddf7\ud83c\uddf5\ud83c\uddfe\ud83c\uddfa\ud83c\uddfe\ud83c\uddf5\ud83c\udde6\ud83c\udde8\ud83c\uddf7\ud83c\uddf8\ud83c\uddfb"},
+    {name:"Caribbean",emoji:"\ud83c\udfd6\ufe0f",count:"5 + 5 territories",color:"#14b8a6",flags:"\ud83c\udde6\ud83c\uddfc\ud83c\udded\ud83c\uddf9\ud83c\udde7\ud83c\uddf8\ud83c\uddef\ud83c\uddf2\ud83c\udde9\ud83c\uddf4\ud83c\uddf0\ud83c\uddfe\ud83c\uddfb\ud83c\uddee\ud83c\uddf5\ud83c\uddf7"},
+    {name:"North America",emoji:"\ud83d\uddfd",count:"3 countries",color:"#3b82f6",flags:"\ud83c\uddfa\ud83c\uddf8\ud83c\udde8\ud83c\udde6\ud83c\uddf2\ud83c\uddfd"},
+    {name:"Europe",emoji:"\ud83c\udff0",count:"31 countries",color:"#f97316",flags:"\ud83c\udde9\ud83c\uddea\ud83c\uddeb\ud83c\uddf7\ud83c\uddec\ud83c\udde7\ud83c\uddea\ud83c\uddf8\ud83c\uddee\ud83c\uddf9\ud83c\uddf5\ud83c\uddf9\ud83c\uddec\ud83c\uddf7\ud83c\uddee\ud83c\uddf8\ud83c\uddf3\ud83c\uddf4\ud83c\uddf8\ud83c\uddea"},
+    {name:"Middle East",emoji:"\ud83d\udd4c",count:"6 countries",color:"#eab308",flags:"\ud83c\uddf9\ud83c\uddf7\ud83c\udde6\ud83c\uddea\ud83c\uddee\ud83c\uddf1\ud83c\uddf5\ud83c\uddf8\ud83c\uddf8\ud83c\uddfe\ud83c\uddf6\ud83c\udde6"},
+    {name:"Africa",emoji:"\ud83e\udd81",count:"6 countries",color:"#ef4444",flags:"\ud83c\uddf2\ud83c\udde6\ud83c\uddf8\ud83c\udde8\ud83c\uddf0\ud83c\uddea\ud83c\uddf9\ud83c\uddff\ud83c\uddf2\ud83c\uddec\ud83c\uddf2\ud83c\uddfa"},
+    {name:"Oceania",emoji:"\ud83c\udfc4",count:"3 + 1 territory",color:"#60a5fa",flags:"\ud83c\udde6\ud83c\uddfa\ud83c\uddf3\ud83c\uddff\ud83c\uddeb\ud83c\uddef\ud83c\uddf5\ud83c\uddeb"},
+    {name:"Asia",emoji:"\ud83c\udfef",count:"10 countries",color:"#4ade80",flags:"\ud83c\udde8\ud83c\uddf3\ud83c\uddee\ud83c\uddf3\ud83c\uddfb\ud83c\uddf3\ud83c\uddf0\ud83c\udded\ud83c\uddf1\ud83c\udde6\ud83c\uddf9\ud83c\udded\ud83c\uddf2\ud83c\uddfe\ud83c\uddf8\ud83c\uddec\ud83c\uddef\ud83c\uddf5\ud83c\uddf2\ud83c\uddfb"}
 ];
 
-function renderCities(filter) {
-    const grid = document.getElementById('city-grid');
-    const f = (filter || '').toLowerCase();
-    const list = f ? cities.filter(c => c.name.toLowerCase().includes(f) || c.country.toLowerCase().includes(f) || c.tags.some(t => t.includes(f))) : cities;
-    grid.innerHTML = list.map(c => {
-        const tags = c.tags.map(t => '<span class="city-tag ' + t + '">' + t + '</span>').join('');
-        const badge = c.live ? '<span class="badge live">LIVE</span>' : '<span class="badge soon">COMING SOON</span>';
-        if (c.live && c.file) {
-            return '<a href="' + c.file + '" class="city-card">' + badge + '<div class="city-flag">' + c.flag + '</div><div class="city-name">' + c.name + '</div><div class="city-country">' + c.country + '</div><div class="city-tags">' + tags + '</div></a>';
+document.getElementById('region-grid').innerHTML=regions.map(function(r){
+    return'<div class="region-card" style="border-left:4px solid '+r.color+'">'
+        +'<div class="region-emoji">'+r.emoji+'</div>'
+        +'<div class="region-name">'+r.name+'</div>'
+        +'<div class="region-count" style="color:'+r.color+'">'+r.count+'</div>'
+        +'<div class="region-flags">'+r.flags+'</div></div>';
+}).join('');
+
+/* City guide cards */
+var cities=[
+    {n:"Seoul",co:"South Korea",f:"\ud83c\uddf0\ud83c\uddf7",u:"seoul-guide.html",live:1,t:["food","culture","nightlife","shopping"]},
+    {n:"Bucheon",co:"South Korea",f:"\ud83c\uddf0\ud83c\uddf7",u:null,live:0,t:["food","culture","nature"]},
+    {n:"Tokyo",co:"Japan",f:"\ud83c\uddef\ud83c\uddf5",u:null,live:0,t:["food","culture","nightlife","shopping"]},
+    {n:"Paris",co:"France",f:"\ud83c\uddeb\ud83c\uddf7",u:null,live:0,t:["food","culture","shopping"]},
+    {n:"London",co:"United Kingdom",f:"\ud83c\uddec\ud83c\udde7",u:null,live:0,t:["culture","nightlife","shopping"]},
+    {n:"New York",co:"United States",f:"\ud83c\uddfa\ud83c\uddf8",u:null,live:0,t:["food","culture","nightlife","shopping"]},
+    {n:"Bangkok",co:"Thailand",f:"\ud83c\uddf9\ud83c\udded",u:null,live:0,t:["food","culture","nightlife"]},
+    {n:"Dubai",co:"UAE",f:"\ud83c\udde6\ud83c\uddea",u:null,live:0,t:["shopping","culture"]},
+    {n:"Singapore",co:"Singapore",f:"\ud83c\uddf8\ud83c\uddec",u:null,live:0,t:["food","culture","shopping"]},
+    {n:"Istanbul",co:"Turkey",f:"\ud83c\uddf9\ud83c\uddf7",u:null,live:0,t:["food","culture"]},
+    {n:"Barcelona",co:"Spain",f:"\ud83c\uddea\ud83c\uddf8",u:null,live:0,t:["food","culture","nightlife","nature"]},
+    {n:"Rome",co:"Italy",f:"\ud83c\uddee\ud83c\uddf9",u:null,live:0,t:["food","culture"]},
+    {n:"Amsterdam",co:"Netherlands",f:"\ud83c\uddf3\ud83c\uddf1",u:null,live:0,t:["culture","nightlife","nature"]},
+    {n:"Prague",co:"Czech Republic",f:"\ud83c\udde8\ud83c\uddff",u:null,live:0,t:["culture","nightlife"]},
+    {n:"Lisbon",co:"Portugal",f:"\ud83c\uddf5\ud83c\uddf9",u:null,live:0,t:["food","culture","nightlife","nature"]},
+    {n:"Bali",co:"Indonesia",f:"\ud83c\uddee\ud83c\udde9",u:null,live:0,t:["nature","culture","food"]},
+    {n:"Sydney",co:"Australia",f:"\ud83c\udde6\ud83c\uddfa",u:null,live:0,t:["nature","food","culture"]},
+    {n:"Mexico City",co:"Mexico",f:"\ud83c\uddf2\ud83c\uddfd",u:null,live:0,t:["food","culture","nightlife"]},
+    {n:"Marrakech",co:"Morocco",f:"\ud83c\uddf2\ud83c\udde6",u:null,live:0,t:["food","culture","shopping"]},
+    {n:"Kyoto",co:"Japan",f:"\ud83c\uddef\ud83c\uddf5",u:null,live:0,t:["culture","nature","food"]},
+    {n:"Reykjavik",co:"Iceland",f:"\ud83c\uddee\ud83c\uddf8",u:null,live:0,t:["nature","culture"]},
+    {n:"Cape Town",co:"South Africa",f:"\ud83c\uddff\ud83c\udde6",u:null,live:0,t:["nature","food","culture"]}
+];
+
+function renderCities(filter){
+    var grid=document.getElementById('city-grid');
+    var f=(filter||'').toLowerCase();
+    var list=f?cities.filter(function(c){
+        return c.n.toLowerCase().indexOf(f)>-1||c.co.toLowerCase().indexOf(f)>-1||c.t.some(function(t){return t.indexOf(f)>-1});
+    }):cities;
+    grid.innerHTML=list.map(function(c){
+        var tags=c.t.map(function(t){return'<span class="tag tag-'+t+'">'+t+'</span>'}).join('');
+        var badge=c.live?'<span class="badge badge-live">LIVE</span>':'<span class="badge badge-soon">COMING SOON</span>';
+        if(c.live&&c.u){
+            return'<a href="'+c.u+'" class="city-card">'+badge+'<div class="city-flag">'+c.f+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></a>';
         }
-        return '<div class="city-card coming-soon">' + badge + '<div class="city-flag">' + c.flag + '</div><div class="city-name">' + c.name + '</div><div class="city-country">' + c.country + '</div><div class="city-tags">' + tags + '</div></div>';
+        return'<div class="city-card coming-soon">'+badge+'<div class="city-flag">'+c.f+'</div><div class="city-name">'+c.n+'</div><div class="city-country">'+c.co+'</div><div class="city-tags">'+tags+'</div></div>';
     }).join('');
 }
-function filterCities() { renderCities(document.getElementById('search').value); }
+function filterCities(){renderCities(document.getElementById('search').value)}
 renderCities();
+
+/* Stat counter animation */
+function animateCounters(){
+    document.querySelectorAll('.stat-num[data-target]').forEach(function(el){
+        var target=parseInt(el.dataset.target);
+        var current=0;
+        var step=Math.max(1,Math.floor(target/40));
+        var timer=setInterval(function(){
+            current+=step;
+            if(current>=target){current=target;clearInterval(timer)}
+            el.textContent=current;
+        },35);
+    });
+}
+
+/* Scroll reveal observer */
+var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)});
+
+animateCounters();
 </script>
 </body>
 </html>
